@@ -1,0 +1,54 @@
+--CREATE OR REPLACE VIEW "RSPC_HIERARCHY" AS
+	WITH "CTE" AS
+	(
+		SELECT
+			T1.CHAIN_ID
+			, T1.EVENT_START
+			, T1.EVENTP_START
+			, T1.EVENTP_GREEN
+			, T1.TYPE
+			, T1.VARIANTE
+		FROM
+			"SAPABAP1"."RSPCCHAIN" T1
+		WHERE
+			T1.OBJVERS         = 'A'
+			AND T1.CHAIN_ID like 'Z%'
+		ORDER BY
+			T1.CHAIN_ID
+			, T1.EVENT_START
+			, T1.EVENTP_START
+	)
+	, HIER as
+	(
+		SELECT  *
+		FROM
+			HIERARCHY ( SOURCE
+			(
+				SELECT
+					*
+					, EVENTP_GREEN node_id
+					, EVENTP_START parent_id
+				FROM
+					CTE
+			)
+			START WHERE EVENTP_START = '' ORPHAN IGNORE )
+	)
+	
+SELECT * FROM
+	(	
+		SELECT
+			*
+		FROM
+			HIER
+		ORDER BY
+			CHAIN_ID
+			, hierarchy_rank
+			, hierarchy_tree_size
+	)
+WHERE
+	(
+		"HIERARCHY_ROOT_RANK"   = '1'
+		AND "HIERARCHY_IS_CYCLE" <> '1'
+	)
+
+;
