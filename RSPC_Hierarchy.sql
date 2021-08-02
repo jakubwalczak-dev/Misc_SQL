@@ -71,7 +71,7 @@ WITH "CTE" AS
 	WHERE
 		(
 			"HIERARCHY_ROOT_RANK"     = '1'
-			AND "HIERARCHY_IS_CYCLE" <> '1'
+			--AND "HIERARCHY_IS_CYCLE" <> '1'
 		)
 )
 , "PC_TGT_ORDER" AS
